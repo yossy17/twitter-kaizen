@@ -13,7 +13,7 @@
 // @description:ko      트위터 표시를 개선하는 스크립트
 // @description:ru      Скрипт для улучшения отображения Twitter
 // @description:de      Skript zur Verbesserung der Twitter-Anzeige
-// @version             1.0.6
+// @version             1.0.65
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
@@ -21,122 +21,14 @@
 // @license             MIT
 // @run-at              document-start
 // @require             https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js
-// @grant               GM_addStyle
+// @require             https://github.com/yossy17/twitter-kaizen/blob/main/style.css
+// @grant               none
 // @downloadURL         https://update.greasyfork.org/scripts/498115/twitter-kaizen.user.js
 // @updateURL           https://update.greasyfork.org/scripts/498115/twitter-kaizen.meta.js
 // ==/UserScript==
 
 (function () {
   "use strict";
-
-  // -----------------------------------------------------------------------------------
-  // CSS
-  // -----------------------------------------------------------------------------------
-  GM_addStyle(`
-        /* -----------------------------------------------------------------------------------
-        Twitterを取り戻す(アイコンを戻す)
-        ----------------------------------------------------------------------------------- */
-        /* Main */
-        .r-64el8z[href="/home"] > div > svg > g > path, .r-1h3ijdo > .r-1pi2tsx > svg > g > path{
-          d: path('M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z') !important;
-        }
-        /* Splash */
-        .r-1blnp2b > g > path{
-          d: path('M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13-.85-.904-2.06-1.47-3.4-1.47-2.572 0-4.658 2.086-4.658 4.66 0 .364.042.718.12 1.06-3.873-.195-7.304-2.05-9.602-4.868-.4.69-.63 1.49-.63 2.342 0 1.616.823 3.043 2.072 3.878-.764-.025-1.482-.234-2.11-.583v.06c0 2.257 1.605 4.14 3.737 4.568-.392.106-.803.162-1.227.162-.3 0-.593-.028-.877-.082.593 1.85 2.313 3.198 4.352 3.234-1.595 1.25-3.604 1.995-5.786 1.995-.376 0-.747-.022-1.112-.065 2.062 1.323 4.51 2.093 7.14 2.093 8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602.91-.658 1.7-1.477 2.323-2.41z') !important;
-        }
-        /* Premium */
-        .r-eqz5dr[href="/i/premium_sign_up"] > div > div > svg > g > path, .r-1loqt21[href="/i/premium_sign_up"] > div > svg > g > path{
-          d: path('M 8.52 3.59 c 0.8 -1.1 2.04 -1.84 3.48 -1.84 s 2.68 0.74 3.49 1.84 c 1.34 -0.21 2.74 0.14 3.76 1.16 s 1.37 2.42 1.16 3.77 c 1.1 0.8 1.84 2.04 1.84 3.48 s -0.74 2.68 -1.84 3.48 c 0.21 1.34 -0.14 2.75 -1.16 3.77 s -2.42 1.37 -3.76 1.16 c -0.8 1.1 -2.05 1.84 -3.49 1.84 s -2.68 -0.74 -3.48 -1.84 c -1.34 0.21 -2.75 -0.14 -3.77 -1.16 c -1.01 -1.02 -1.37 -2.42 -1.16 -3.77 c -1.09 -0.8 -1.84 -2.04 -1.84 -3.48 s 0.75 -2.68 1.84 -3.48 c -0.21 -1.35 0.14 -2.75 1.16 -3.77 s 2.43 -1.37 3.77 -1.16 Z m 3.48 0.16 c -0.85 0 -1.66 0.53 -2.12 1.43 l -0.38 0.77 l -0.82 -0.27 c -0.96 -0.32 -1.91 -0.12 -2.51 0.49 c -0.6 0.6 -0.8 1.54 -0.49 2.51 l 0.27 0.81 l -0.77 0.39 c -0.9 0.46 -1.43 1.27 -1.43 2.12 s 0.53 1.66 1.43 2.12 l 0.77 0.39 l -0.27 0.81 c -0.31 0.97 -0.11 1.91 0.49 2.51 c 0.6 0.61 1.55 0.81 2.51 0.49 l 0.82 -0.27 l 0.38 0.77 c 0.46 0.9 1.27 1.43 2.12 1.43 s 1.66 -0.53 2.12 -1.43 l 0.39 -0.77 l 0.82 0.27 c 0.96 0.32 1.9 0.12 2.51 -0.49 c 0.6 -0.6 0.8 -1.55 0.48 -2.51 l -0.26 -0.81 l 0.76 -0.39 c 0.91 -0.46 1.43 -1.27 1.43 -2.12 s -0.52 -1.66 -1.43 -2.12 l -0.77 -0.39 l 0.27 -0.81 c 0.32 -0.97 0.12 -1.91 -0.48 -2.51 c -0.61 -0.61 -1.55 -0.81 -2.51 -0.49 l -0.82 0.27 l -0.39 -0.77 c -0.46 -0.9 -1.27 -1.43 -2.12 -1.43 Z m 4.74 5.68 l -6.2 6.77 l -3.74 -3.74 l 1.41 -1.42 l 2.26 2.26 l 4.8 -5.23 l 1.47 1.36 Z') !important;
-        }
-        /* Home */
-        .r-eqz5dr[href="/home"] > div > div > svg > g > path{
-          d: path('M12,1.696 L0.622,8.807l1.06,1.696L3,9.679V19.5C3,20.881 4.119,22 5.5,22h13c1.381,0 2.5,-1.119 2.5,-2.5V9.679l1.318,0.824 1.06,-1.696L12,1.696ZM12,16.5c-1.933,0 -3.5,-1.567 -3.5,-3.5s1.567,-3.5 3.5,-3.5 3.5,1.567 3.5,3.5 -1.567,3.5 -3.5,3.5Z') !important;
-        }
-
-        /* -----------------------------------------------------------------------------------
-        基本的なボーダーを消す
-        ----------------------------------------------------------------------------------- */
-        .r-1kqtdi0,
-        .r-1igl3o0 {
-          border: none !important;
-        }
-
-        /* -----------------------------------------------------------------------------------
-        ヘッダーのスクロールバーを消す
-        ----------------------------------------------------------------------------------- */
-        .css-175oi2r.r-1pi2tsx.r-1wtj0ep.r-1rnoaur.r-o96wvk.r-is05cd {
-          overflow-y: scroll !important;
-          -ms-overflow-style: none !important;
-          scrollbar-width: none !important;
-        }
-        .css-175oi2r.r-1pi2tsx.r-1wtj0ep.r-1rnoaur.r-o96wvk.r-is05cd::-webkit-scrollbar {
-          display:none !important;
-        }
-
-        /* -----------------------------------------------------------------------------------
-        サイドバーの”Subscribe to Premium”を消す
-        ----------------------------------------------------------------------------------- */
-        .css-175oi2r.r-1habvwh.r-eqz5dr.r-uaa2di.r-1mmae3n.r-3pj75a.r-bnwqim {
-          display: none;
-        }
-
-        /* -----------------------------------------------------------------------------------
-        サイドバーの”Who to follow”を消す
-        ----------------------------------------------------------------------------------- */
-        .css-175oi2r.r-1bro5k0 {
-          display: none;
-        }
-
-        /* -----------------------------------------------------------------------------------
-        TL上のUserNameを消す
-        ----------------------------------------------------------------------------------- */
-        a > .css-146c3p1.r-dnmrzs.r-1udh08x.r-3s2u2q.r-bcqeeo.r-1ttztb7.r-qvutc0.r-1qd0xha.r-a023e6.r-rjixqe.r-16dba41.r-18u37iz.r-1wvb978,
-        .css-175oi2r:nth-child(2) > .css-175oi2r > .css-175oi2r:nth-child(2) > .css-175oi2r > .css-175oi2r:nth-child(1) > .css-175oi2r > .css-146c3p1:nth-child(1) > .css-1jxf684,
-        .css-146c3p1.r-bcqeeo.r-1ttztb7.r-qvutc0.r-1qd0xha.r-a023e6.r-rjixqe.r-16dba41.r-1q142lx.r-n7gxbd {
-          display: none;
-        }
-
-        /* -----------------------------------------------------------------------------------
-        カキコの下のボーダーを消す
-        ----------------------------------------------------------------------------------- */
-        .r-109y4c4 {
-          height: 0 !important;
-        }
-
-        /* -----------------------------------------------------------------------------------
-        TLの幅を600pxから700pxに、右サイドバーの幅を350pxから250pxに変更
-        ----------------------------------------------------------------------------------- */
-        .r-1ye8kvj {
-          max-width: 700px !important;
-        }
-        .r-1hycxz {
-          width: 250px !important;
-        }
-        .css-175oi2r.r-kemksi.r-1kqtdi0.r-th6na.r-1phboty.r-1dqxon3.r-1hycxz {
-          width: 350px !important;
-        }
-
-        /* -----------------------------------------------------------------------------------
-        サイドバーのWhat’s happeningのステータスを見やすく
-        ----------------------------------------------------------------------------------- */
-        .css-175oi2r.r-1mmae3n.r-3pj75a.r-o7ynqc.r-6416eg.r-1ny4l3l.r-1loqt21 > div > div > .css-175oi2r.r-1wbh5a2.r-1awozwy.r-18u37iz {
-          display: flex;
-          flex-flow: column;
-        }
-        .r-r2y082 {
-          max-width: 100%;
-        }
-
-        /* -----------------------------------------------------------------------------------
-        時計、日付のフォントカラーを変更
-        ----------------------------------------------------------------------------------- */
-
-        #date__container__text,
-        #time__container__text {
-          color: #e7e9ea;
-        }
-      `);
-
   // -----------------------------------------------------------------------------------
   // TLの時間を相対時間から絶対時間に変更(HH:MM:SS･mm/dd/yy, week)
   // -----------------------------------------------------------------------------------
@@ -340,4 +232,120 @@
       container.remove();
     }
   }
+  // -----------------------------------------------------------------------------------
+  // Tweet Engagements をアクセスしやすく
+  // -----------------------------------------------------------------------------------
+  // 引用ボタンを追加する関数
+  function addQuoteElement() {
+    const targetDiv = document.querySelector('div[role="group"][id^="id__"]');
+    if (
+      !targetDiv ||
+      targetDiv.querySelector('[data-testid="tweetEngagements"]')
+    ) {
+      return;
+    }
+
+    const newElement = createQuoteButton();
+    targetDiv.insertBefore(newElement, targetDiv.children[4]);
+  }
+
+  // 引用ボタンを作成する関数
+  function createQuoteButton() {
+    const newElement = document.createElement("div");
+    newElement.className = "css-175oi2r r-18u37iz r-1h0z5md r-13awgt0";
+
+    const a = document.createElement("a");
+    const tweetPath = window.location.pathname;
+    a.href = `${tweetPath}/quotes`;
+    a.className =
+      "css-175oi2r r-1777fci r-bt1l66 r-bztko3 r-lrvibr r-1loqt21 r-1ny4l3l";
+    a.dataset.testid = "tweetEngagements";
+    a.addEventListener("click", handleQuoteClick);
+
+    const innerDiv = createInnerDiv();
+    a.appendChild(innerDiv);
+    newElement.appendChild(a);
+
+    return newElement;
+  }
+
+  // 引用ボタンの内部要素を作成する関数
+  function createInnerDiv() {
+    const innerDiv = document.createElement("div");
+    innerDiv.dir = "ltr";
+    innerDiv.className =
+      "css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-1qd0xha r-a023e6 r-rjixqe r-16dba41 r-1awozwy r-6koalj r-1h0z5md r-o7ynqc r-clp7b1 r-3s2u2q";
+    innerDiv.style.textOverflow = "unset";
+    innerDiv.style.color = "rgb(113, 118, 123)";
+
+    innerDiv.appendChild(createIconDiv());
+    innerDiv.appendChild(createCountDiv());
+
+    return innerDiv;
+  }
+
+  // アイコンを作成する関数
+  function createIconDiv() {
+    const iconDiv = document.createElement("div");
+    iconDiv.className = "css-175oi2r r-xoduu5";
+    iconDiv.innerHTML = `
+      <div class="css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div>
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-50lct3 r-1srniue">
+        <g><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"></path></g>
+      </svg>
+    `;
+    return iconDiv;
+  }
+
+  // カウント表示部分を作成する関数
+  function createCountDiv() {
+    const countDiv = document.createElement("div");
+    countDiv.className = "css-175oi2r r-xoduu5 r-1udh08x";
+    countDiv.innerHTML = `
+      <span data-testid="app-text-transition-container" style="transition-property: transform; transition-duration: 0.3s; transform: translate3d(0px, 0px, 0px);">
+        <span class="css-1jxf684 r-1ttztb7 r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-n7gxbd" style="text-overflow: unset">
+          <span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3" style="text-overflow: unset">Quotes</span>
+        </span>
+      </span>
+    `;
+    return countDiv;
+  }
+
+  // 引用ボタンのクリックイベントハンドラ
+  function handleQuoteClick(event) {
+    event.preventDefault();
+    const href = event.currentTarget.getAttribute("href");
+    location.href = href;
+  }
+
+  // デバウンス関数
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  const debouncedAddQuoteElement = debounce(addQuoteElement, 250);
+
+  // ページ読み込み時に実行
+  window.addEventListener("load", debouncedAddQuoteElement);
+
+  // URLの変更を監視
+  let lastUrl = location.href;
+  new MutationObserver(() => {
+    const url = location.href;
+    if (url !== lastUrl) {
+      lastUrl = url;
+      debouncedAddQuoteElement();
+    }
+  }).observe(document, { subtree: true, childList: true });
+
+  // ナビゲーションイベントをリッスン
+  window.addEventListener("popstate", debouncedAddQuoteElement);
 })();
