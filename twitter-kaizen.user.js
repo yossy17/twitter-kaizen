@@ -34,45 +34,60 @@
   GM_addStyle(GM_getResourceText("IMPORTED_CSS"));
 
   // -----------------------------------------------------------------------------------
-  // Twitterを取り戻す(アイコンを戻す)
+  // ユーティリティ関数と定数
   // -----------------------------------------------------------------------------------
-  const iconPathData = {
-    Main: "M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13...",
-    Premium:
-      "M 8.52 3.59 c 0.8 -1.1 2.04 -1.84 3.48 -1.84 s 2.68 0.74 3.49 1.84 c 1.34 -0.21 2.74 0.14 3.76 1.16...",
-    Home: "M12,1.696 L0.622,8.807l1.06,1.696L3,9.679V19.5C3,20.881 4.119,22 5.5,22h13c1.381,0 2.5,-1.119 2.5,-2.5V9.679l1.318,0.824 1.06,-1.696L12,1.696ZM12,16.5c-1.933,0 -3.5,-1.567 -3.5,-3.5s1.567,-3.5 3.5,-3.5 3.5,1.567 3.5,3.5 -1.567,3.5 -3.5,3.5Z",
+  const Utils = {
+    debounce: function (func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    },
+
+    pad: function (num) {
+      return num.toString().padStart(2, "0");
+    },
+
+    createElement: function (tag, options = {}) {
+      const {
+        id,
+        classList = [],
+        attributes = {},
+        innerHTML = "",
+        textContent = "",
+      } = options;
+      const element = document.createElement(tag);
+      if (id) element.id = id;
+      classList.forEach((cls) => element.classList.add(cls));
+      for (const [attr, value] of Object.entries(attributes)) {
+        element.setAttribute(attr, value);
+      }
+      if (innerHTML) element.innerHTML = innerHTML;
+      if (textContent) element.textContent = textContent;
+      return element;
+    },
+
+    getLanguageCode: function () {
+      const USER_LANG = navigator.language || navigator.userLanguage;
+      return USER_LANG.slice(0, 2);
+    },
+
+    observeDOM: function (
+      targetNode,
+      callback,
+      config = { childList: true, subtree: true }
+    ) {
+      const observer = new MutationObserver(callback);
+      observer.observe(targetNode, config);
+      return observer;
+    },
   };
-
-  // path要素を更新する関数
-  function updateSvgPaths() {
-    // 対象のSVG path要素をクエリし、それらを更新
-    const pathSelectors = [
-      '.r-64el8z[href="/home"] > div > svg > g > path',
-      ".r-1h3ijdo > .r-1pi2tsx > svg > g > path",
-      ".r-1blnp2b > g > path",
-      '.r-eqz5dr[href="/i/premium_sign_up"] > div > div > svg > g > path',
-      '.r-1loqt21[href="/i/premium_sign_up"] > div > svg > g > path',
-      '.r-eqz5dr[href="/home"] > div > div > svg > g > path',
-    ];
-
-    pathSelectors.forEach((selector) => {
-      const elements = document.querySelectorAll(selector);
-      elements.forEach((element) => {
-        const pathDataKey = selector.split(" ")[0]; // キーのマッチングロジックを調整
-        if (iconPathData[pathDataKey]) {
-          element.setAttribute("d", iconPathData[pathDataKey]);
-        }
-      });
-    });
-  }
-
-  // 関数を実行してpathを更新
-  updateSvgPaths();
 
   // -----------------------------------------------------------------------------------
   // TLの時間を相対時間から絶対時間に変更(HH:MM:SS･mm/dd/yy, week)
   // -----------------------------------------------------------------------------------
-  const weekDays = {
+  const WEEK_DAYS = {
     en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     ja: ["日", "月", "火", "水", "木", "金", "土"],
     zh: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
@@ -81,167 +96,157 @@
     de: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
   };
 
-  const userLang = navigator.language || navigator.userLanguage;
-  const langCode = userLang.slice(0, 2);
-  const weekDay = weekDays[langCode] || weekDays.en;
+  const LANG_CODE = Utils.getLanguageCode();
+  const WEEK_DAY = WEEK_DAYS[LANG_CODE] || WEEK_DAYS.en;
 
-  // 日付をフォーマットされた文字列に変換
-  const toFormattedDateString = function (date) {
-    const pad = (num) => ("0" + num).slice(-2);
-    const year = date.getFullYear().toString().slice(-2);
-    return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}･${pad(date.getMonth() + 1)}/${pad(date.getDate())}/${year}, ${weekDay[date.getDay()]}`;
-  };
+  // タイムスタンプモジュール
+  const TimestampModule = {
+    toFormattedDateString: function (date) {
+      const YEAR = date.getFullYear().toString().slice(-2);
+      const TIME = `${Utils.pad(date.getHours())}:${Utils.pad(date.getMinutes())}:${Utils.pad(date.getSeconds())}`;
+      const DATE = `${Utils.pad(date.getMonth() + 1)}/${Utils.pad(date.getDate())}/${YEAR}, ${WEEK_DAY[date.getDay()]}`;
+      return `${TIME}･${DATE}`;
+    },
+    // タイムスタンプの更新
+    updateTimestamps: function () {
+      const timeSelectors =
+        'main div[data-testid="primaryColumn"] section article a[href*="/status/"] time, div.css-175oi2r.r-18u37iz.r-1q142lx div.css-175oi2r.r-1d09ksm.r-18u37iz.r-1wbh5a2 time';
 
-  const updateTimestamps = function () {
-    document
-      .querySelectorAll(
-        'main div[data-testid="primaryColumn"] section article a[href*="/status/"] time, div.css-175oi2r.r-18u37iz.r-1q142lx div.css-175oi2r.r-1d09ksm.r-18u37iz.r-1wbh5a2 time'
-      )
-      .forEach(function (e) {
-        const parent = e.parentNode;
-        const span = document.createElement("span");
-        const s0 = e.getAttribute("datetime");
-        const s1 = toFormattedDateString(new Date(s0));
-        span.textContent = s1;
+      document.querySelectorAll(timeSelectors).forEach((timeElement) => {
+        const parent = timeElement.parentNode;
+        const span = Utils.createElement("span", {
+          textContent: this.toFormattedDateString(
+            new Date(timeElement.getAttribute("datetime"))
+          ),
+        });
         span.style.pointerEvents = "none";
         parent.appendChild(span);
-        parent.removeChild(e);
+        parent.removeChild(timeElement);
       });
+    },
   };
-
-  setInterval(updateTimestamps, 1000);
+  // タイムスタンプの更新を定期的に実行
+  setInterval(() => TimestampModule.updateTimestamps(), 1000);
 
   // -----------------------------------------------------------------------------------
   // サイドバーに時間、日付を表示(HH:MM:SS, mm/dd/yy, week)
   // -----------------------------------------------------------------------------------
-  function createInfo(type) {
-    const nav = document.querySelector(
-      'div[class="css-175oi2r r-vacyoi r-ttdzmv"]'
-    );
-
-    if (nav && !document.getElementById(type)) {
-      const div = document.createElement("div");
-      div.id = type;
-      div.classList.add(
-        "css-175oi2r",
-        "r-6koalj",
-        "r-eqz5dr",
-        "r-16y2uox",
-        "r-1habvwh",
-        "r-cnw61z",
-        "r-13qz1uu",
-        "r-1loqt21",
-        "r-1ny4l3l"
+  const SidebarModule = {
+    createInfoElement: function (type) {
+      const nav = document.querySelector(
+        'div[class="css-175oi2r r-vacyoi r-ttdzmv"]'
       );
+      if (!nav || document.getElementById(type)) return;
 
-      const container = document.createElement("div");
-      container.id = `${type}__container`;
-      container.classList.add(
-        "css-175oi2r",
-        "r-sdzlij",
-        "r-dnmrzs",
-        "r-1awozwy",
-        "r-18u37iz",
-        "r-1777fci",
-        "r-xyw6el",
-        "r-o7ynqc",
-        "r-6416eg"
-      );
-      div.appendChild(container);
-
-      const icon = document.createElement("div");
-      icon.id = `${type}__container__icon`;
-      icon.classList.add("css-175oi2r");
-      container.appendChild(icon);
-      icon.innerHTML =
+      const iconHTML =
         type === "time"
           ? '<i class="fa-regular fa-clock" style="width: 26.25px; height: 26.25px;"></i>'
           : '<i class="fa-solid fa-calendar-days" style="width: 26.25px; height: 26.25px;"></i>';
 
-      const text = document.createElement("div");
-      text.id = `${type}__container__text`;
-      text.classList.add(
-        "css-146c3p1",
-        "r-dnmrzs",
-        "r-1udh08x",
-        "r-3s2u2q",
-        "r-bcqeeo",
-        "r-1ttztb7",
-        "r-qvutc0",
-        "r-1qd0xha",
-        "r-adyw6z",
-        "r-135wba7",
-        "r-16dba41",
-        "r-dlybji",
-        "r-nazi8o"
-      );
-      container.appendChild(text);
-
-      const textContent = document.createElement("span");
-      textContent.id = `${type}__text__content`;
-      textContent.classList.add(
-        "1jxf684",
-        "r-bcqeeo",
-        "r-1ttztb7",
-        "r-qvutc0",
-        "r-poiln3"
-      );
-      text.appendChild(textContent);
-
-      function updateInfo() {
+      const textContentFunc = () => {
         const date = new Date();
-        const year = date.getFullYear().toString().slice(-2);
-        textContent.textContent =
-          type === "time"
-            ? `${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}:${("0" + date.getSeconds()).slice(-2)}`
-            : `${date.getMonth() + 1}/${date.getDate()}/${year}, ${weekDay[date.getDay()]}`;
-      }
+        const YEAR = date.getFullYear().toString().slice(-2);
+        const TIME = `${Utils.pad(date.getHours())}:${Utils.pad(date.getMinutes())}:${Utils.pad(date.getSeconds())}`;
+        const DATE = `${Utils.pad(date.getMonth() + 1)}/${Utils.pad(date.getDate())}/${YEAR}, ${WEEK_DAY[date.getDay()]}`;
 
-      updateInfo();
+        return type === "time" ? `${TIME}` : `${DATE}`;
+      };
+
+      const infoElement = Utils.createElement("div", {
+        id: type,
+        classList: [
+          "css-175oi2r",
+          "r-6koalj",
+          "r-eqz5dr",
+          "r-16y2uox",
+          "r-1habvwh",
+          "r-cnw61z",
+          "r-13qz1uu",
+          "r-1loqt21",
+          "r-1ny4l3l",
+        ],
+      });
+
+      const container = Utils.createElement("div", {
+        id: `${type}__container`,
+        classList: [
+          "css-175oi2r",
+          "r-sdzlij",
+          "r-dnmrzs",
+          "r-1awozwy",
+          "r-18u37iz",
+          "r-1777fci",
+          "r-xyw6el",
+          "r-o7ynqc",
+          "r-6416eg",
+        ],
+      });
+
+      const icon = Utils.createElement("div", {
+        id: `${type}__container__icon`,
+        classList: ["css-175oi2r"],
+        innerHTML: iconHTML,
+      });
+
+      const text = Utils.createElement("div", {
+        id: `${type}__container__text`,
+        classList: [
+          "css-146c3p1",
+          "r-dnmrzs",
+          "r-1udh08x",
+          "r-3s2u2q",
+          "r-bcqeeo",
+          "r-1ttztb7",
+          "r-qvutc0",
+          "r-1qd0xha",
+          "r-adyw6z",
+          "r-135wba7",
+          "r-16dba41",
+          "r-dlybji",
+          "r-nazi8o",
+        ],
+      });
+
+      const textContent = Utils.createElement("span", {
+        id: `${type}__text__content`,
+        classList: ["1jxf684", "r-bcqeeo", "r-1ttztb7", "r-qvutc0", "r-poiln3"],
+        textContent: textContentFunc(),
+      });
+
+      text.appendChild(textContent);
+      container.appendChild(icon);
+      container.appendChild(text);
+      infoElement.appendChild(container);
+      nav.appendChild(infoElement);
+
       if (type === "time") {
-        setInterval(updateInfo, 1000);
+        setInterval(() => {
+          textContent.textContent = textContentFunc();
+        }, 1000);
       }
+    },
 
-      nav.appendChild(div);
-    }
-  }
+    init: function () {
+      this.createInfoElement("time");
+      this.createInfoElement("date");
 
-  window.addEventListener("load", function () {
-    createInfo("time");
-    createInfo("date");
+      const observer = new MutationObserver(() => {
+        this.createInfoElement("time");
+        this.createInfoElement("date");
+      });
 
-    const observer = new MutationObserver(() => {
-      createInfo("time");
-      createInfo("date");
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-  });
+      observer.observe(document.body, { childList: true, subtree: true });
+    },
+  };
 
   // -----------------------------------------------------------------------------------
   // 動画プレイヤーをデフォルトに戻す
   // -----------------------------------------------------------------------------------
-  const body = document.body;
+  const VideoModule = {
+    setupDefaultVideoPlayer: function (container) {
+      const video = container.querySelector("div:first-child > div > video");
+      if (!video) return;
 
-  if (body) {
-    const mutationObserver = new MutationObserver(() => {
-      const videoContainer = body.querySelector(
-        'div[data-testid="videoComponent"]:not(.enhanced-video)'
-      );
-      if (videoContainer) {
-        videoContainer.classList.add("enhanced-video");
-        setTimeout(() => setupDefaultVideoPlayer(videoContainer), 100);
-      }
-    });
-
-    mutationObserver.observe(body, {
-      subtree: true,
-      childList: true,
-    });
-  }
-
-  function setupDefaultVideoPlayer(container) {
-    const video = container.querySelector("div:first-child > div > video");
-    if (video) {
       video.controls = true;
       video.removeAttribute("disablepictureinpicture");
       video.muted = false;
@@ -270,122 +275,152 @@
 
       container.parentElement.appendChild(video);
       container.remove();
-    }
-  }
+    },
+
+    observeVideos: function () {
+      const observer = new MutationObserver(() => {
+        const videoContainer = document.body.querySelector(
+          'div[data-testid="videoComponent"]:not(.enhanced-video)'
+        );
+        if (videoContainer) {
+          videoContainer.classList.add("enhanced-video");
+          setTimeout(() => this.setupDefaultVideoPlayer(videoContainer), 100);
+        }
+      });
+
+      observer.observe(document.body, { subtree: true, childList: true });
+    },
+  };
+
   // -----------------------------------------------------------------------------------
   // Tweet Engagements をアクセスしやすく
   // -----------------------------------------------------------------------------------
-  // 引用ボタンを追加する関数
-  function addQuoteElement() {
-    const targetDiv = document.querySelector('div[role="group"][id^="id__"]');
-    if (
-      !targetDiv ||
-      targetDiv.querySelector('[data-testid="tweetEngagements"]')
-    ) {
-      return;
-    }
+  const TweetEngagementModule = {
+    createQuoteButton: function () {
+      const newElement = Utils.createElement("div", {
+        classList: ["css-175oi2r", "r-18u37iz", "r-1h0z5md", "r-13awgt0"],
+      });
 
-    const newElement = createQuoteButton();
-    targetDiv.insertBefore(newElement, targetDiv.children[4]);
-  }
+      const a = Utils.createElement("a", {
+        attributes: {
+          href: `${window.location.pathname}/quotes`,
+          "data-testid": "tweetEngagements",
+        },
+        classList: [
+          "css-175oi2r",
+          "r-1777fci",
+          "r-bt1l66",
+          "r-bztko3",
+          "r-lrvibr",
+          "r-1loqt21",
+          "r-1ny4l3l",
+        ],
+      });
 
-  // 引用ボタンを作成する関数
-  function createQuoteButton() {
-    const newElement = document.createElement("div");
-    newElement.className = "css-175oi2r r-18u37iz r-1h0z5md r-13awgt0";
+      a.addEventListener("click", (event) => {
+        event.preventDefault();
+        location.href = event.currentTarget.getAttribute("href");
+      });
 
-    const a = document.createElement("a");
-    const tweetPath = window.location.pathname;
-    a.href = `${tweetPath}/quotes`;
-    a.className =
-      "css-175oi2r r-1777fci r-bt1l66 r-bztko3 r-lrvibr r-1loqt21 r-1ny4l3l";
-    a.dataset.testid = "tweetEngagements";
-    a.addEventListener("click", handleQuoteClick);
+      const innerDiv = Utils.createElement("div", {
+        attributes: { dir: "ltr" },
+        classList: [
+          "css-146c3p1",
+          "r-bcqeeo",
+          "r-1ttztb7",
+          "r-qvutc0",
+          "r-1qd0xha",
+          "r-a023e6",
+          "r-rjixqe",
+          "r-16dba41",
+          "r-1awozwy",
+          "r-6koalj",
+          "r-1h0z5md",
+          "r-o7ynqc",
+          "r-clp7b1",
+          "r-3s2u2q",
+        ],
+      });
+      innerDiv.style.textOverflow = "unset";
+      innerDiv.style.color = "rgb(113, 118, 123)";
 
-    const innerDiv = createInnerDiv();
-    a.appendChild(innerDiv);
-    newElement.appendChild(a);
+      const iconDiv = Utils.createElement("div", {
+        classList: ["css-175oi2r", "r-xoduu5"],
+        innerHTML: `
+          <div class="css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div>
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-50lct3 r-1srniue">
+            <g><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"></path></g>
+          </svg>
+        `,
+      });
 
-    return newElement;
-  }
+      const countDiv = Utils.createElement("div", {
+        classList: ["css-175oi2r", "r-xoduu5", "r-1udh08x"],
+        innerHTML: `
+          <span data-testid="app-text-transition-container" style="transition-property: transform; transition-duration: 0.3s; transform: translate3d(0px, 0px, 0px);">
+            <span class="css-1jxf684 r-1ttztb7 r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-n7gxbd" style="text-overflow: unset">
+              <span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3" style="text-overflow: unset">Quotes</span>
+            </span>
+          </span>
+        `,
+      });
 
-  // 引用ボタンの内部要素を作成する関数
-  function createInnerDiv() {
-    const innerDiv = document.createElement("div");
-    innerDiv.dir = "ltr";
-    innerDiv.className =
-      "css-146c3p1 r-bcqeeo r-1ttztb7 r-qvutc0 r-1qd0xha r-a023e6 r-rjixqe r-16dba41 r-1awozwy r-6koalj r-1h0z5md r-o7ynqc r-clp7b1 r-3s2u2q";
-    innerDiv.style.textOverflow = "unset";
-    innerDiv.style.color = "rgb(113, 118, 123)";
+      innerDiv.appendChild(iconDiv);
+      innerDiv.appendChild(countDiv);
+      a.appendChild(innerDiv);
+      newElement.appendChild(a);
 
-    innerDiv.appendChild(createIconDiv());
-    innerDiv.appendChild(createCountDiv());
+      return newElement;
+    },
 
-    return innerDiv;
-  }
+    addQuoteElement: function () {
+      const targetDiv = document.querySelector('div[role="group"][id^="id__"]');
+      if (
+        !targetDiv ||
+        targetDiv.querySelector('[data-testid="tweetEngagements"]')
+      ) {
+        return;
+      }
 
-  // アイコンを作成する関数
-  function createIconDiv() {
-    const iconDiv = document.createElement("div");
-    iconDiv.className = "css-175oi2r r-xoduu5";
-    iconDiv.innerHTML = `
-      <div class="css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div>
-      <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-50lct3 r-1srniue">
-        <g><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"></path></g>
-      </svg>
-    `;
-    return iconDiv;
-  }
+      const quoteButton = this.createQuoteButton();
+      targetDiv.insertBefore(quoteButton, targetDiv.children[4]);
+    },
 
-  // カウント表示部分を作成する関数
-  function createCountDiv() {
-    const countDiv = document.createElement("div");
-    countDiv.className = "css-175oi2r r-xoduu5 r-1udh08x";
-    countDiv.innerHTML = `
-      <span data-testid="app-text-transition-container" style="transition-property: transform; transition-duration: 0.3s; transform: translate3d(0px, 0px, 0px);">
-        <span class="css-1jxf684 r-1ttztb7 r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-n7gxbd" style="text-overflow: unset">
-          <span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3" style="text-overflow: unset">Quotes</span>
-        </span>
-      </span>
-    `;
-    return countDiv;
-  }
+    init: function () {
+      const debouncedAddQuoteElement = Utils.debounce(
+        () => this.addQuoteElement(),
+        250
+      );
 
-  // 引用ボタンのクリックイベントハンドラ
-  function handleQuoteClick(event) {
-    event.preventDefault();
-    const href = event.currentTarget.getAttribute("href");
-    location.href = href;
-  }
+      let lastUrl = location.href;
+      const urlObserver = new MutationObserver(() => {
+        const url = location.href;
+        if (url !== lastUrl) {
+          lastUrl = url;
+          debouncedAddQuoteElement();
+        }
+      });
 
-  // デバウンス関数
-  function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  }
+      urlObserver.observe(document, { subtree: true, childList: true });
 
-  const debouncedAddQuoteElement = debounce(addQuoteElement, 250);
+      window.addEventListener("popstate", debouncedAddQuoteElement);
 
-  // ページ読み込み時に実行
-  window.addEventListener("load", debouncedAddQuoteElement);
-
-  // URLの変更を監視
-  let lastUrl = location.href;
-  new MutationObserver(() => {
-    const url = location.href;
-    if (url !== lastUrl) {
-      lastUrl = url;
       debouncedAddQuoteElement();
-    }
-  }).observe(document, { subtree: true, childList: true });
+    },
+  };
 
-  // ナビゲーションイベントをリッスン
-  window.addEventListener("popstate", debouncedAddQuoteElement);
+  // メイン処理
+  function main() {
+    // サイドバーの情報表示を初期化
+    SidebarModule.init();
+
+    // 動画プレイヤーの設定を監視
+    VideoModule.observeVideos();
+
+    // 引用ツイートボタンの追加を初期化
+    TweetEngagementModule.init();
+  }
+
+  // ページ読み込み時にメイン処理を実行
+  window.addEventListener("load", main);
 })();
