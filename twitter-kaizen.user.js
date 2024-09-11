@@ -21,14 +21,52 @@
 // @license             MIT
 // @run-at              document-start
 // @require             https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js
-// @require             https://github.com/yossy17/twitter-kaizen/blob/main/style.css
-// @grant               none
+// @resource            IMPORTED_CSS https://raw.githubusercontent.com/yossy17/twitter-kaizen/main/style.css
+// @grant               GM_addStyle
+// @grant               GM_getResourceText
 // @downloadURL         https://update.greasyfork.org/scripts/498115/twitter-kaizen.user.js
 // @updateURL           https://update.greasyfork.org/scripts/498115/twitter-kaizen.meta.js
 // ==/UserScript==
 
 (function () {
   "use strict";
+
+  // -----------------------------------------------------------------------------------
+  // Twitterを取り戻す(アイコンを戻す)
+  // -----------------------------------------------------------------------------------
+  const iconPathData = {
+    Main: "M23.643 4.937c-.835.37-1.732.62-2.675.733.962-.576 1.7-1.49 2.048-2.578-.9.534-1.897.922-2.958 1.13...",
+    Premium:
+      "M 8.52 3.59 c 0.8 -1.1 2.04 -1.84 3.48 -1.84 s 2.68 0.74 3.49 1.84 c 1.34 -0.21 2.74 0.14 3.76 1.16...",
+    Home: "M12,1.696 L0.622,8.807l1.06,1.696L3,9.679V19.5C3,20.881 4.119,22 5.5,22h13c1.381,0 2.5,-1.119 2.5,-2.5V9.679l1.318,0.824 1.06,-1.696L12,1.696ZM12,16.5c-1.933,0 -3.5,-1.567 -3.5,-3.5s1.567,-3.5 3.5,-3.5 3.5,1.567 3.5,3.5 -1.567,3.5 -3.5,3.5Z",
+  };
+
+  // path要素を更新する関数
+  function updateSvgPaths() {
+    // 対象のSVG path要素をクエリし、それらを更新
+    const pathSelectors = [
+      '.r-64el8z[href="/home"] > div > svg > g > path',
+      ".r-1h3ijdo > .r-1pi2tsx > svg > g > path",
+      ".r-1blnp2b > g > path",
+      '.r-eqz5dr[href="/i/premium_sign_up"] > div > div > svg > g > path',
+      '.r-1loqt21[href="/i/premium_sign_up"] > div > svg > g > path',
+      '.r-eqz5dr[href="/home"] > div > div > svg > g > path',
+    ];
+
+    pathSelectors.forEach((selector) => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach((element) => {
+        const pathDataKey = selector.split(" ")[0]; // キーのマッチングロジックを調整
+        if (iconPathData[pathDataKey]) {
+          element.setAttribute("d", iconPathData[pathDataKey]);
+        }
+      });
+    });
+  }
+
+  // 関数を実行してpathを更新
+  updateSvgPaths();
+
   // -----------------------------------------------------------------------------------
   // TLの時間を相対時間から絶対時間に変更(HH:MM:SS･mm/dd/yy, week)
   // -----------------------------------------------------------------------------------
