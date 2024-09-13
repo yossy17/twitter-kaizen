@@ -42,6 +42,10 @@ The sidebar doesn't need this much width. Even this is too big.
 
 Fixed other minor CSS elements
 
+## Usage
+
+`Ctrl + Alt + o`: Access the settings panel where you can toggle various features ON/OFF.
+
 ---
 
 ## Contributing

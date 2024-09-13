@@ -45,6 +45,10 @@ Die Seitenleiste braucht nicht so viel Breite. Selbst das ist zu groß.
 
 Andere kleinere CSS-Elemente geändert.
 
+## Verwendung
+
+`Ctrl + Alt + o`: Greifen Sie auf das Einstellungsfenster zu, in dem Sie verschiedene Funktionen ein- oder ausschalten können.
+
 ---
 
 ## Beitrag
