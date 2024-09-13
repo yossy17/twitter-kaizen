@@ -37,47 +37,36 @@
   // ユーティリティ関数と定数
   // -----------------------------------------------------------------------------------
   const Utils = {
-    debounce: function (func, wait) {
+    debounce: (func, wait) => {
       let timeout;
-      return function (...args) {
+      return (...args) => {
         clearTimeout(timeout);
         timeout = setTimeout(() => func(...args), wait);
       };
     },
 
-    pad: function (num) {
-      return num.toString().padStart(2, "0");
-    },
+    pad: (num) => num.toString().padStart(2, "0"),
 
-    createElement: function (tag, options = {}) {
-      const {
-        id,
-        classList = [],
-        attributes = {},
-        innerHTML = "",
-        textContent = "",
-      } = options;
+    createElement: (tag, options = {}) => {
       const element = document.createElement(tag);
-      if (id) element.id = id;
-      classList.forEach((cls) => element.classList.add(cls));
-      for (const [attr, value] of Object.entries(attributes)) {
-        element.setAttribute(attr, value);
-      }
-      if (innerHTML) element.innerHTML = innerHTML;
-      if (textContent) element.textContent = textContent;
+      if (options.id) element.id = options.id;
+      options.classList?.forEach((cls) => element.classList.add(cls));
+      Object.entries(options.attributes || {}).forEach(([attr, value]) =>
+        element.setAttribute(attr, value)
+      );
+      if (options.innerHTML) element.innerHTML = options.innerHTML;
+      if (options.textContent) element.textContent = options.textContent;
       return element;
     },
 
-    getLanguageCode: function () {
-      const USER_LANG = navigator.language || navigator.userLanguage;
-      return USER_LANG.slice(0, 2);
-    },
+    getLanguageCode: () =>
+      (navigator.language || navigator.userLanguage).slice(0, 2),
 
-    observeDOM: function (
+    observeDOM: (
       targetNode,
       callback,
       config = { childList: true, subtree: true }
-    ) {
+    ) => {
       const observer = new MutationObserver(callback);
       observer.observe(targetNode, config);
       return observer;
@@ -125,8 +114,6 @@
       });
     },
   };
-  // タイムスタンプの更新を定期的に実行
-  setInterval(() => TimestampModule.updateTimestamps(), 1000);
 
   // -----------------------------------------------------------------------------------
   // サイドバーに時間、日付を表示(HH:MM:SS, mm/dd/yy, week)
@@ -409,8 +396,13 @@
     },
   };
 
+  // -----------------------------------------------------------------------------------
   // メイン処理
+  // -----------------------------------------------------------------------------------
   function main() {
+    // タイムスタンプの更新を定期的に実行
+    setInterval(() => TimestampModule.updateTimestamps(), 1000);
+
     // サイドバーの情報表示を初期化
     SidebarModule.init();
 
