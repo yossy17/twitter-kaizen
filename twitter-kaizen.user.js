@@ -13,7 +13,7 @@
 // @description:ko      트위터 표시를 개선하는 스크립트
 // @description:ru      Скрипт для улучшения отображения Twitter
 // @description:de      Skript zur Verbesserung der Twitter-Anzeige
-// @version             2.3.1
+// @version             2.4
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
@@ -616,6 +616,8 @@
         attributes: {
           href: `${window.location.pathname}/quotes`,
           "data-testid": "tweetEngagements",
+          target: "_blank",
+          rel: "noopener",
         },
         classList: [
           "css-175oi2r",
@@ -629,8 +631,8 @@
       });
 
       link.addEventListener("click", (event) => {
-        event.preventDefault();
-        location.href = event.currentTarget.getAttribute("href");
+        const href = event.currentTarget.getAttribute("href");
+        window.open(href, "_blank");
       });
 
       const contentDiv = Utils.createElement("div", {
@@ -663,6 +665,24 @@
             <g><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"></path></g>
           </svg>
         `,
+      });
+
+      // contentDiv にホバーイベントを追加
+      contentDiv.addEventListener("mouseenter", () => {
+        contentDiv.style.color = "rgb(238 201 104)";
+        const iconBgDiv = iconDiv.querySelector("div");
+        if (iconBgDiv) {
+          iconBgDiv.style.backgroundColor = "rgba(238, 201, 104, 0.1)";
+        }
+      });
+
+      contentDiv.addEventListener("mouseleave", () => {
+        contentDiv.style.color = "rgb(113, 118, 123)";
+
+        const iconBgDiv = iconDiv.querySelector("div");
+        if (iconBgDiv) {
+          iconBgDiv.style.backgroundColor = "";
+        }
       });
 
       const countDiv = Utils.createElement("div", {
