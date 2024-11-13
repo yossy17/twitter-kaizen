@@ -13,7 +13,7 @@
 // @description:ko      트위터 표시를 개선하는 스크립트
 // @description:ru      Скрипт для улучшения отображения Twitter
 // @description:de      Skript zur Verbesserung der Twitter-Anzeige
-// @version             2.3
+// @version             2.3.1
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
@@ -21,7 +21,6 @@
 // @license             MIT
 // @run-at              document-start
 // @require             https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js
-// @resource            IMPORTED_CSS https://raw.githubusercontent.com/yossy17/twitter-kaizen/main/style.css
 // @grant               GM_addStyle
 // @grant               GM_getResourceText
 // @grant               GM_registerMenuCommand
