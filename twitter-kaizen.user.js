@@ -13,7 +13,7 @@
 // @description:ko      트위터를 편안하게
 // @description:ru      Комфортное использование Твиттера
 // @description:de      Twitter bequem nutzen
-// @version             2.4
+// @version             2.5
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
