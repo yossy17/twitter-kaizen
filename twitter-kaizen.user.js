@@ -24,8 +24,6 @@
 // @grant               GM_addStyle
 // @grant               GM_getResourceText
 // @grant               GM_registerMenuCommand
-// @downloadURL         https://update.greasyfork.org/scripts/498115/twitter-kaizen.user.js
-// @updateURL           https://update.greasyfork.org/scripts/498115/twitter-kaizen.meta.js
 // ==/UserScript==
 
 (function () {
