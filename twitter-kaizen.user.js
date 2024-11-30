@@ -6,13 +6,13 @@
 // @name:ko             Twitter kaizen
 // @name:ru             Twitter kaizen
 // @name:de             Twitter kaizen
-// @description         Twitterの表示を改善するスクリプト
-// @description:ja      Twitterの表示を改善するスクリプト
+// @description         Enjoy Twitter Comfortably
+// @description:ja      ツイッターを快適に
 // @description:en      Script to improve Twitter display
-// @description:zh-CN   改善Twitter显示的脚本
-// @description:ko      트위터 표시를 개선하는 스크립트
-// @description:ru      Скрипт для улучшения отображения Twitter
-// @description:de      Skript zur Verbesserung der Twitter-Anzeige
+// @description:zh-CN   舒适地使用推特
+// @description:ko      트위터를 편안하게
+// @description:ru      Комфортное использование Твиттера
+// @description:de      Twitter bequem nutzen
 // @version             2.4
 // @author              Yos_sy
 // @match               https://x.com/*
