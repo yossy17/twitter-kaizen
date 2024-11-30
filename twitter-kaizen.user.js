@@ -76,45 +76,33 @@
     サイドバーの”Subscribe to Premium”を消す
     ----------------------------------------------------------------------------------- */
     .css-175oi2r.r-1habvwh.r-eqz5dr.r-uaa2di.r-1mmae3n.r-3pj75a.r-bnwqim {
-      display: none;
+      display: none !important;
     }
     
     /* -----------------------------------------------------------------------------------
     サイドバーの”Who to follow”を消す
     ----------------------------------------------------------------------------------- */
     .css-175oi2r.r-1bro5k0 {
-      display: none;
+      display: none !important;
     }
     
     /* -----------------------------------------------------------------------------------
     TL上のUserNameを消す
     ----------------------------------------------------------------------------------- */
-    a
-      > .css-146c3p1.r-dnmrzs.r-1udh08x.r-3s2u2q.r-bcqeeo.r-1ttztb7.r-qvutc0.r-1qd0xha.r-a023e6.r-rjixqe.r-16dba41.r-18u37iz.r-1wvb978,
-    .css-175oi2r:nth-child(2)
-      > .css-175oi2r
-      > .css-175oi2r:nth-child(2)
-      > .css-175oi2r
-      > .css-175oi2r:nth-child(1)
-      > .css-175oi2r
-      > .css-146c3p1:nth-child(1)
-      > .css-1jxf684,
-    .css-146c3p1.r-bcqeeo.r-1ttztb7.r-qvutc0.r-1qd0xha.r-a023e6.r-rjixqe.r-16dba41.r-1q142lx.r-n7gxbd {
-      display: none;
+    div[data-testid="User-Name"] > div:nth-child(2) > div > div:nth-child(1),
+    div[data-testid="User-Name"] > div:nth-child(2) > div > div:nth-child(2) {
+      display: none !important;
     }
-    
+
     /* -----------------------------------------------------------------------------------
-    サイドバーのWhat’s happeningのステータスを見やすく
+    TL上のアカウント名と日付を縦並びにする
     ----------------------------------------------------------------------------------- */
-    .css-175oi2r.r-1mmae3n.r-3pj75a.r-o7ynqc.r-6416eg.r-1ny4l3l.r-1loqt21
-      > div
-      > div
-      > .css-175oi2r.r-1wbh5a2.r-1awozwy.r-18u37iz {
-      display: flex;
-      flex-flow: column;
+    div[data-testid="User-Name"] {
+      align-items: initial !important;
+      flex-direction: column !important;
     }
-    .r-r2y082 {
-      max-width: 100%;
+    div[data-testid="User-Name"] > div:last-child {
+      margin-left: 0 !important;
     }
     
     /* -----------------------------------------------------------------------------------
@@ -123,7 +111,7 @@
     #date__container__text,
     #time__container__text {
       color: #e7e9ea;
-    }  
+    }
   `);
 
   // ローカルストレージから設定を読み込む
