@@ -33,8 +33,15 @@
     /* -----------------------------------------------------------------------------------
     基本的なボーダーを消す
     ----------------------------------------------------------------------------------- */
-    .r-1kqtdi0,
-    .r-1igl3o0 {
+    /* light */
+    .r-jxzhtn /* basic */,
+    .r-1igl3o0, /* tl */
+    /* gray */
+    .r-18bvks7 /* basic */,
+    .r-1ila09b /* tl */,
+    /* dark */
+    .r-1kqtdi0 /* basic */,
+    .r-j5o65s /* tl */ {
       border: none !important;
     }
     
@@ -104,10 +111,25 @@
     }
     
     /* -----------------------------------------------------------------------------------
-    時計、日付のフォントカラーを変更
+    時計、日付のフォントカラーを変更 (何かしらの理由で背景色を変えてる場合を考えて 'color-scheme' の指定も追加)
     ----------------------------------------------------------------------------------- */
-    #date__container__text,
-    #time__container__text {
+    /* light */
+    html[style*="color-scheme: light;"] #date__container__text,
+    html[style*="color-scheme: light;"] #time__container__text,
+    body[style*="background-color: rgb(255, 255, 255);"] #date__container__text,
+    body[style*="background-color: rgb(255, 255, 255);"] #time__container__text {
+      color: #0f1419;
+    }
+    /* gray */
+    body[style*="background-color: rgb(21, 32, 43);"] #date__container__text,
+    body[style*="background-color: rgb(21, 32, 43);"] #time__container__text {
+      color: #f7f9f9;
+    }
+    /* dark */
+    html[style*="color-scheme: dark;"] #date__container__text,
+    html[style*="color-scheme: dark;"] #date__container__text,
+    body[style*="background-color: rgb(0, 0, 0);"] #date__container__text,
+    body[style*="background-color: rgb(0, 0, 0);"] #time__container__text {
       color: #e7e9ea;
     }
   `);
