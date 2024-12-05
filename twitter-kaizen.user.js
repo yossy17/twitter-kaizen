@@ -13,7 +13,7 @@
 // @description:ko      트위터를 편안하게
 // @description:ru      Комфортное использование Твиттера
 // @description:de      Twitter bequem nutzen
-// @version             2.6.1
+// @version             2.6.2
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
@@ -441,8 +441,12 @@
     updateTimestamps: function () {
       if (!config.useAbsoluteTime) return;
 
+      /*
+        1. 様々な時間要素
+        2. 引用の時間要素
+      */
       const timeSelectors =
-        'main div[data-testid="primaryColumn"] section article a[href*="/status/"] time, div.css-175oi2r.r-18u37iz.r-1q142lx div.css-175oi2r.r-1d09ksm.r-18u37iz.r-1wbh5a2 time';
+        'a[href*="/status/"] > time, div.css-146c3p1.r-bcqeeo.r-1ttztb7.r-qvutc0.r-1qd0xha.r-a023e6.r-rjixqe.r-16dba41.r-xoduu5.r-1q142lx.r-1w6e6rj.r-9aw3ui.r-3s2u2q > time';
 
       document.querySelectorAll(timeSelectors).forEach((timeElement) => {
         const parent = timeElement.parentNode;
