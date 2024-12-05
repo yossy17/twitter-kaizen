@@ -13,7 +13,7 @@
 // @description:ko      트위터를 편안하게
 // @description:ru      Комфортное использование Твиттера
 // @description:de      Twitter bequem nutzen
-// @version             2.6
+// @version             2.6.1
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
@@ -127,7 +127,7 @@
     }
     /* dark */
     html[style*="color-scheme: dark;"] #date__container__text,
-    html[style*="color-scheme: dark;"] #date__container__text,
+    html[style*="color-scheme: dark;"] #time__container__text,
     body[style*="background-color: rgb(0, 0, 0);"] #date__container__text,
     body[style*="background-color: rgb(0, 0, 0);"] #time__container__text {
       color: #e7e9ea;
