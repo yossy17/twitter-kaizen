@@ -13,7 +13,7 @@
 // @description:ko      트위터를 편안하게
 // @description:ru      Комфортное использование Твиттера
 // @description:de      Twitter bequem nutzen
-// @version             2.6.3
+// @version             2.6.3.1
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
@@ -638,11 +638,11 @@
   // -----------------------------------------------------------------------------------
   const TweetEngagementModule = {
     createQuoteButton: function (tweetId) {
-      const buttonWrapper = Utils.createElement("div", {
+      const tweetEngagementButtonWrapper = Utils.createElement("div", {
         classList: ["css-175oi2r", "r-18u37iz", "r-1h0z5md", "r-13awgt0"],
       });
 
-      const link = Utils.createElement("a", {
+      const tweetEngagementlink = Utils.createElement("a", {
         attributes: {
           href: `https://x.com${tweetId}/quotes`,
           "data-testid": "tweetEngagements",
@@ -660,12 +660,12 @@
         ],
       });
 
-      link.addEventListener("click", (event) => {
-        const href = event.currentTarget.getAttribute("href");
-        window.open(href, "_blank");
+      tweetEngagementlink.addEventListener("click", (event) => {
+        const tweetEngagementHref = event.currentTarget.getAttribute("href");
+        window.open(tweetEngagementHref, "_blank");
       });
 
-      const contentDiv = Utils.createElement("div", {
+      const tweetEngagementContentDiv = Utils.createElement("div", {
         attributes: { dir: "ltr" },
         classList: [
           "css-146c3p1",
@@ -684,50 +684,59 @@
           "r-3s2u2q",
         ],
       });
-      contentDiv.style.textOverflow = "unset";
-      contentDiv.style.color = "rgb(113, 118, 123)";
+      tweetEngagementContentDiv.style.textOverflow = "unset";
+      tweetEngagementContentDiv.style.color = "rgb(113, 118, 123)";
 
-      const iconDiv = Utils.createElement("div", {
+      const tweetEngagementIconDiv = Utils.createElement("div", {
         classList: ["css-175oi2r", "r-xoduu5"],
-        innerHTML: ` <div class="css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div> <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-50lct3 r-1srniue"> <g> <path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z" transform="scale(0.75) translate(4, 0)" /> <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z" /> </g> </svg> `,
+        innerHTML: `
+          <div class="css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div>
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-50lct3 r-1srniue">
+            <g>
+              <path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z" transform="scale(0.75) translate(4, 0)" />
+              <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z" />
+            </g>
+          </svg>
+        `,
       });
 
-      // contentDiv にホバーイベントを追加
-      contentDiv.addEventListener("mouseenter", () => {
-        contentDiv.style.color = "rgb(238 201 104)";
-        const iconBgDiv = iconDiv.querySelector("div");
-        if (iconBgDiv) {
-          iconBgDiv.style.backgroundColor = "rgba(238, 201, 104, 0.1)";
+      // ホバーイベントを追加
+      const tweetEngagementIconBgDiv =
+        tweetEngagementIconDiv.querySelector("div");
+
+      tweetEngagementContentDiv.addEventListener("mouseenter", () => {
+        tweetEngagementContentDiv.style.color = "rgb(238 201 104)";
+        if (tweetEngagementIconBgDiv) {
+          tweetEngagementIconBgDiv.style.backgroundColor =
+            "rgba(238, 201, 104, 0.1)";
         }
       });
 
-      contentDiv.addEventListener("mouseleave", () => {
-        contentDiv.style.color = "rgb(113, 118, 123)";
-
-        const iconBgDiv = iconDiv.querySelector("div");
-        if (iconBgDiv) {
-          iconBgDiv.style.backgroundColor = "";
+      tweetEngagementContentDiv.addEventListener("mouseleave", () => {
+        tweetEngagementContentDiv.style.color = "rgb(113, 118, 123)";
+        if (tweetEngagementIconBgDiv) {
+          tweetEngagementIconBgDiv.style.backgroundColor = "";
         }
       });
 
-      const countDiv = Utils.createElement("div", {
+      const tweetEngagementCountDiv = Utils.createElement("div", {
         classList: ["css-175oi2r", "r-xoduu5", "r-1udh08x"],
-        innerHTML: ` <span data-testid="app-text-transition-container" style="transition-property: transform; transition-duration: 0.3s; transform: translate3d(0px, 0px, 0px);"> <span class="css-1jxf684 r-1ttztb7 r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-n7gxbd" style="text-overflow: unset"> <span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3" style="text-overflow: unset">Quotes</span> </span> </span> `,
+        innerHTML: `<span data-testid="app-text-transition-container" style="transition-property: transform; transition-duration: 0.3s; transform: translate3d(0px, 0px, 0px);"><span class="css-1jxf684 r-1ttztb7 r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-n7gxbd" style="text-overflow: unset"><span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3" style="text-overflow: unset">Quotes</span></span></span>`,
       });
 
-      contentDiv.appendChild(iconDiv);
-      contentDiv.appendChild(countDiv);
-      link.appendChild(contentDiv);
-      buttonWrapper.appendChild(link);
+      tweetEngagementContentDiv.appendChild(tweetEngagementIconDiv);
+      tweetEngagementContentDiv.appendChild(tweetEngagementCountDiv);
+      tweetEngagementlink.appendChild(tweetEngagementContentDiv);
+      tweetEngagementButtonWrapper.appendChild(tweetEngagementlink);
 
-      return buttonWrapper;
+      return tweetEngagementButtonWrapper;
     },
 
     addQuoteElement: function () {
-      const targetDivs = document.querySelectorAll(
+      const tweetEngagementTargetDivs = document.querySelectorAll(
         'div[role="group"][id^="id__"]'
       );
-      targetDivs.forEach((targetDiv) => {
+      tweetEngagementTargetDivs.forEach((targetDiv) => {
         if (targetDiv.querySelector('[data-testid="tweetEngagements"]')) {
           return;
         }
@@ -737,17 +746,23 @@
         let tweetId = null;
 
         if (article) {
-          const statusLink = article.querySelector('a[href*="/status/"]');
-          if (statusLink) {
-            const href = statusLink.getAttribute("href");
-            if (href) {
-              tweetId = href;
+          const tweetEngagementStatusLink = article.querySelector(
+            'a[href*="/status/"]'
+          );
+          if (tweetEngagementStatusLink) {
+            const tweetEngagementHref =
+              tweetEngagementStatusLink.getAttribute("href");
+            if (tweetEngagementHref) {
+              tweetId = tweetEngagementHref;
             }
           }
         }
 
-        const quoteButton = this.createQuoteButton(tweetId);
-        targetDiv.insertBefore(quoteButton, targetDiv.children[4]);
+        const tweetEngagementQuoteButton = this.createQuoteButton(tweetId);
+        targetDiv.insertBefore(
+          tweetEngagementQuoteButton,
+          targetDiv.children[4]
+        );
       });
     },
 
