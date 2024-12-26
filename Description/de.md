@@ -40,7 +40,7 @@ Weil ich es nicht tun werde.
 **"Wem folgen" aus der Seitenleiste entfernen**  
 Ich habe mich nie von hier aus registriert.
 
-**TL-Breite von 600px auf 700px ändern, rechte Seitenleiste von 350px auf 250px**  
+**TL-Breite von 600px auf 700px ändern, rechte Seitenleiste von 350px auf 250px, und Antwort-Seitenleiste bei Bildvergrößerung von 350px auf 550px ändern**  
 Die Seitenleiste braucht nicht so viel Breite. Selbst das ist zu groß.
 
 Andere kleinere CSS-Elemente geändert.

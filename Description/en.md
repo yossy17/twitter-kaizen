@@ -37,7 +37,7 @@ I won't.
 **Remove "Who to follow" from sidebar**  
 I've never registered from here.
 
-**Change TL width from 600px to 700px, right sidebar width from 350px to 250px**  
+**Change TL width from 600px to 700px, right sidebar width from 350px to 250px, and reply sidebar width during image enlargement from 350px to 550px**  
 The sidebar doesn't need this much width. Even this is too big.
 
 Fixed other minor CSS elements

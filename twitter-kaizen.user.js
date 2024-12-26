@@ -13,7 +13,7 @@
 // @description:ko      트위터를 편안하게
 // @description:ru      Комфортное использование Твиттера
 // @description:de      Twitter bequem nutzen
-// @version             2.6.2
+// @version             2.6.3
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
@@ -53,16 +53,19 @@
     }
     
     /* -----------------------------------------------------------------------------------
-    TLの幅を600pxから700pxに、右サイドバーの幅を350pxから250pxに変更
+    TLの幅を600pxから700pxに、右サイドバーの幅を350pxから250pxに、画像拡大時のリプサイドバーを350pxから550pxに変更
     ----------------------------------------------------------------------------------- */
+    /* TL */
     .r-1ye8kvj {
       max-width: 700px !important;
     }
+    /* Sidebar */
     .r-1hycxz {
       width: 250px !important;
     }
+    /* 画像拡大時のリプサイドバー */
     .css-175oi2r.r-kemksi.r-1kqtdi0.r-th6na.r-1phboty.r-1dqxon3.r-1hycxz {
-      width: 350px !important;
+      width: 550px !important;
     }
     
     /* -----------------------------------------------------------------------------------
@@ -634,14 +637,14 @@
   // Tweet Engagements をアクセスしやすく
   // -----------------------------------------------------------------------------------
   const TweetEngagementModule = {
-    createQuoteButton: function () {
+    createQuoteButton: function (tweetId) {
       const buttonWrapper = Utils.createElement("div", {
         classList: ["css-175oi2r", "r-18u37iz", "r-1h0z5md", "r-13awgt0"],
       });
 
       const link = Utils.createElement("a", {
         attributes: {
-          href: `${window.location.pathname}/quotes`,
+          href: `https://x.com${tweetId}/quotes`,
           "data-testid": "tweetEngagements",
           target: "_blank",
           rel: "noopener",
@@ -686,12 +689,7 @@
 
       const iconDiv = Utils.createElement("div", {
         classList: ["css-175oi2r", "r-xoduu5"],
-        innerHTML: `
-          <div class="css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div>
-          <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-50lct3 r-1srniue">
-            <g><path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"></path></g>
-          </svg>
-        `,
+        innerHTML: ` <div class="css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div> <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-50lct3 r-1srniue"> <g> <path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z" transform="scale(0.75) translate(4, 0)" /> <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z" /> </g> </svg> `,
       });
 
       // contentDiv にホバーイベントを追加
@@ -714,13 +712,7 @@
 
       const countDiv = Utils.createElement("div", {
         classList: ["css-175oi2r", "r-xoduu5", "r-1udh08x"],
-        innerHTML: `
-          <span data-testid="app-text-transition-container" style="transition-property: transform; transition-duration: 0.3s; transform: translate3d(0px, 0px, 0px);">
-            <span class="css-1jxf684 r-1ttztb7 r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-n7gxbd" style="text-overflow: unset">
-              <span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3" style="text-overflow: unset">Quotes</span>
-            </span>
-          </span>
-        `,
+        innerHTML: ` <span data-testid="app-text-transition-container" style="transition-property: transform; transition-duration: 0.3s; transform: translate3d(0px, 0px, 0px);"> <span class="css-1jxf684 r-1ttztb7 r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-n7gxbd" style="text-overflow: unset"> <span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3" style="text-overflow: unset">Quotes</span> </span> </span> `,
       });
 
       contentDiv.appendChild(iconDiv);
@@ -731,31 +723,32 @@
       return buttonWrapper;
     },
 
-    // 投稿ページかどうかを判定
-    isTweetPage: function () {
-      return (
-        document.querySelector(
-          "div.css-175oi2r.r-1kbdv8c.r-18u37iz.r-1oszu61.r-3qxfft.r-n7gxbd.r-2sztyj.r-1efd50x.r-5kkj8d.r-h3s6tt.r-1wtj0ep"
-        ) !== null
-      );
-    },
-
     addQuoteElement: function () {
-      // 投稿ページの場合ボタンを表示
-      if (!this.isTweetPage()) {
-        return;
-      }
+      const targetDivs = document.querySelectorAll(
+        'div[role="group"][id^="id__"]'
+      );
+      targetDivs.forEach((targetDiv) => {
+        if (targetDiv.querySelector('[data-testid="tweetEngagements"]')) {
+          return;
+        }
 
-      const targetDiv = document.querySelector('div[role="group"][id^="id__"]');
-      if (
-        !targetDiv ||
-        targetDiv.querySelector('[data-testid="tweetEngagements"]')
-      ) {
-        return;
-      }
+        // ツイートIDの取得
+        let article = targetDiv.closest("article");
+        let tweetId = null;
 
-      const quoteButton = this.createQuoteButton();
-      targetDiv.insertBefore(quoteButton, targetDiv.children[4]);
+        if (article) {
+          const statusLink = article.querySelector('a[href*="/status/"]');
+          if (statusLink) {
+            const href = statusLink.getAttribute("href");
+            if (href) {
+              tweetId = href;
+            }
+          }
+        }
+
+        const quoteButton = this.createQuoteButton(tweetId);
+        targetDiv.insertBefore(quoteButton, targetDiv.children[4]);
+      });
     },
 
     init: function () {
@@ -776,9 +769,19 @@
 
       urlObserver.observe(document, { subtree: true, childList: true });
 
+      const timeline = document.querySelector(
+        "div[data-testid='primaryColumn']"
+      );
+      if (timeline) {
+        new MutationObserver(() => {
+          debouncedAddQuoteElement();
+        }).observe(timeline, { childList: true, subtree: true });
+      }
+
       const retryInterval = setInterval(debouncedAddQuoteElement, 1000);
 
       window.addEventListener("popstate", debouncedAddQuoteElement);
+
       history.pushState = ((origPushState) => {
         return function (state, title, url) {
           origPushState.apply(this, arguments);
