@@ -13,7 +13,7 @@
 // @description:ko      트위터를 편안하게
 // @description:ru      Комфортное использование Твиттера
 // @description:de      Twitter bequem nutzen
-// @version             2.6.4
+// @version             2.6.5
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
@@ -171,6 +171,9 @@
       Object.entries(options.attributes || {}).forEach(([attr, value]) =>
         element.setAttribute(attr, value)
       );
+      Object.entries(options.styles || {}).forEach(([key, value]) => {
+        element.style[key] = value;
+      });
       if (options.innerHTML) element.innerHTML = options.innerHTML;
       if (options.textContent) element.textContent = options.textContent;
       return element;
@@ -638,11 +641,8 @@
   // -----------------------------------------------------------------------------------
   const TweetEngagementModule = {
     createQuoteButton: function (tweetId) {
-      const tweetEngagementButtonWrapper = Utils.createElement("div", {
-        classList: ["css-175oi2r", "r-18u37iz", "r-1h0z5md", "r-13awgt0"],
-      });
-
-      const tweetEngagementlink = Utils.createElement("a", {
+      // ボタンを追加
+      const tweetEngagementButton = Utils.createElement("a", {
         attributes: {
           href: `https://x.com${tweetId}/quotes`,
           "data-testid": "tweetEngagements",
@@ -657,15 +657,18 @@
           "r-lrvibr",
           "r-1loqt21",
           "r-1ny4l3l",
+          "r-1wron08",
         ],
       });
 
-      tweetEngagementlink.addEventListener("click", (event) => {
+      // クリックしたときリンクに飛ぶ
+      tweetEngagementButton.addEventListener("click", (event) => {
         const tweetEngagementHref = event.currentTarget.getAttribute("href");
         window.open(tweetEngagementHref, "_blank");
       });
 
-      const tweetEngagementContentDiv = Utils.createElement("div", {
+      // アイコン要素
+      const tweetEngagementIconDiv = Utils.createElement("div", {
         attributes: { dir: "ltr" },
         classList: [
           "css-146c3p1",
@@ -684,52 +687,105 @@
           "r-3s2u2q",
         ],
       });
-      tweetEngagementContentDiv.style.textOverflow = "unset";
-      tweetEngagementContentDiv.style.color = "rgb(113, 118, 123)";
 
-      const tweetEngagementIconDiv = Utils.createElement("div", {
-        classList: ["css-175oi2r", "r-xoduu5"],
-        innerHTML: `
-          <div class="css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l"></div>
-          <svg viewBox="0 0 24 24" aria-hidden="true" class="r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd r-1xvli5t r-1hdv0qi">
-            <g>
-              <path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z" transform="scale(0.75) translate(4, 0)" />
-              <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z" />
-            </g>
-          </svg>
-        `,
-      });
+      // tweetEngagementButton 要素の親要素を確認
+      const tweetEngagementParent = () => {
+        let parent = tweetEngagementButton.parentElement;
+        // 以下4つのクラスがあるないといはnullを返す
+        while (parent) {
+          if (
+            parent.classList.contains("css-175oi2r") &&
+            parent.classList.contains("r-1kbdv8c") &&
+            parent.classList.contains("r-18u37iz") &&
+            parent.classList.contains("r-1wtj0ep")
+          ) {
+            return parent;
+          }
+          parent = parent.parentElement;
+        }
+        return null;
+      };
 
-      // ホバーイベントを追加
+      const tweetEngagementIcon = () => {
+        const parent = tweetEngagementParent();
+        const tweetEngagementIconBaseClass =
+          "r-4qtqp9 r-yyyyoo r-dnmrzs r-bnwqim r-lrvibr r-m6rgpd";
+
+        // 親要素が見つからなかったとき tweetEngagementIconBaseClass を返す
+        if (!parent) return tweetEngagementIconBaseClass;
+
+        // 以下7つのクラスがあるとき(メイン投稿のとき)は r-50lct3 と r-1srniu (w,h: 1.5rem) を付加
+        if (
+          parent.classList.contains("r-1oszu61") &&
+          parent.classList.contains("r-3qxfft") &&
+          parent.classList.contains("r-n7gxbd") &&
+          parent.classList.contains("r-2sztyj") &&
+          parent.classList.contains("r-1efd50x") &&
+          parent.classList.contains("r-5kkj8d") &&
+          parent.classList.contains("r-h3s6tt") &&
+          parent.classList.contains("r-1igl3o0") &&
+          parent.classList.contains("r-rull8r") &&
+          parent.classList.contains("r-qklmqi")
+        ) {
+          return `${tweetEngagementIconBaseClass} r-50lct3 r-1srniu`;
+        }
+        // そうでないとき(TL, リプのとき)は r-1xvli5t と r-1hdv0qi (w,h: 1.25rem) を付加
+        return `${tweetEngagementIconBaseClass} r-1xvli5t r-1hdv0qi`;
+      };
+
+      // svg要素
+      const tweetEngagementIconElement = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+      );
+      tweetEngagementIconElement.setAttribute("viewBox", "0 0 24 24");
+      tweetEngagementIconElement.setAttribute("aria-hidden", "true");
+
+      setTimeout(() => {
+        tweetEngagementIconElement.setAttribute("class", tweetEngagementIcon());
+      }, 0);
+
+      tweetEngagementIconElement.innerHTML = `
+        <g>
+          <path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z" transform="scale(0.75) translate(4, 0)" />
+          <path d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z" />
+        </g>
+      `;
+
+      // アイコン背景要素
+      const tweetEngagementBgDiv = document.createElement("div");
+      tweetEngagementBgDiv.className =
+        "css-175oi2r r-xoduu5 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-1niwhzg r-sdzlij r-xf4iuw r-o7ynqc r-6416eg r-1ny4l3l";
+
+      tweetEngagementIconDiv.appendChild(tweetEngagementBgDiv);
+      tweetEngagementIconDiv.appendChild(tweetEngagementIconElement);
+
+      // ホバーイベント
+      tweetEngagementIconDiv.style.textOverflow = "unset";
+      tweetEngagementIconDiv.style.color = "rgb(113, 118, 123)";
+
       const tweetEngagementIconBgDiv =
         tweetEngagementIconDiv.querySelector("div");
 
-      tweetEngagementContentDiv.addEventListener("mouseenter", () => {
-        tweetEngagementContentDiv.style.color = "rgb(238 201 104)";
+      // ホバー時に色を変える
+      tweetEngagementButton.addEventListener("mouseenter", () => {
+        tweetEngagementIconDiv.style.color = "rgb(238 201 104)";
         if (tweetEngagementIconBgDiv) {
           tweetEngagementIconBgDiv.style.backgroundColor =
             "rgba(238, 201, 104, 0.1)";
         }
       });
 
-      tweetEngagementContentDiv.addEventListener("mouseleave", () => {
-        tweetEngagementContentDiv.style.color = "rgb(113, 118, 123)";
+      tweetEngagementButton.addEventListener("mouseleave", () => {
+        tweetEngagementIconDiv.style.color = "rgb(113, 118, 123)";
         if (tweetEngagementIconBgDiv) {
           tweetEngagementIconBgDiv.style.backgroundColor = "";
         }
       });
 
-      const tweetEngagementCountDiv = Utils.createElement("div", {
-        classList: ["css-175oi2r", "r-xoduu5", "r-1udh08x"],
-        innerHTML: `<span data-testid="app-text-transition-container" style="transition-property: transform; transition-duration: 0.3s; transform: translate3d(0px, 0px, 0px);"><span class="css-1jxf684 r-1ttztb7 r-qvutc0 r-poiln3 r-n6v787 r-1cwl3u0 r-1k6nrdp r-n7gxbd" style="text-overflow: unset"><span class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3" style="text-overflow: unset">Quotes</span></span></span>`,
-      });
+      tweetEngagementButton.appendChild(tweetEngagementIconDiv);
 
-      tweetEngagementContentDiv.appendChild(tweetEngagementIconDiv);
-      tweetEngagementContentDiv.appendChild(tweetEngagementCountDiv);
-      tweetEngagementlink.appendChild(tweetEngagementContentDiv);
-      tweetEngagementButtonWrapper.appendChild(tweetEngagementlink);
-
-      return tweetEngagementButtonWrapper;
+      return tweetEngagementButton;
     },
 
     addQuoteElement: function () {
