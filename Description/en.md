@@ -11,7 +11,7 @@ e.g.: `06:15:03 06/17/24, Mon`
 
 ### Display time and date in sidebar
 
-look in the lower right hand corner of the taskbar, but I get fidgety when I don't see the time on the page. Also, I have customized the taskbar so the date is a little hard to see.
+look in the lower right hand corner of the taskbar, but I get fidgety when I don't see the time on the page.
 
 ### Reclaim Twitter (restore icon)
 
@@ -29,7 +29,7 @@ Added link to quoted tweets in the status section of article pages.
 It looks cooler without borders.
 
 **Remove scrollbar from header**  
-Just in case for elements that might be added in the future. Also, it looked unsightly when displayed at low heights.
+It looked unsightly when displayed at low heights.
 
 **Remove "Subscribe to Premium" from sidebar**  
 I won't.

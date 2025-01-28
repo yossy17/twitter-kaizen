@@ -12,7 +12,6 @@ z.B.: `06:15:03 06/17/24, Mo`
 ### Zeit und Datum in der Seitenleiste anzeigen
 
 Man könnte einfach unten rechts in der Taskleiste nachsehen, aber das Fehlen der Zeit auf der Seite macht mich unruhig.
-Außerdem habe ich meine Taskleiste angepasst und das Datum ist etwas schwer zu sehen.
 
 ### Twitter zurückerobern (Symbol wiederherstellen)
 
@@ -31,8 +30,7 @@ Link zu Zitaten in Tweets im Statusbereich der Artikelseiten hinzugefügt.
 Es sieht cooler aus ohne Ränder.
 
 **Scrollleiste aus dem Header entfernen**  
-Nur für den Fall, dass in Zukunft Elemente hinzugefügt werden.
-Außerdem sah es bei niedrigen Höhen unschön aus.
+sah es bei niedrigen Höhen unschön aus.
 
 **"Premium abonnieren" aus der Seitenleiste entfernen**  
 Weil ich es nicht tun werde.
