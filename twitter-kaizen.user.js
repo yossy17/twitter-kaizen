@@ -13,7 +13,7 @@
 // @description:ko      트위터를 편안하게
 // @description:ru      Комфортное использование Твиттера
 // @description:de      Twitter bequem nutzen
-// @version             2.6.5
+// @version             2.6.6
 // @author              Yos_sy
 // @match               https://x.com/*
 // @namespace           http://tampermonkey.net/
@@ -641,6 +641,8 @@
   // -----------------------------------------------------------------------------------
   const TweetEngagementModule = {
     createQuoteButton: function (tweetId) {
+      if (!config.enhanceTweetEngagements) return;
+
       // ボタンを追加
       const tweetEngagementButton = Utils.createElement("a", {
         attributes: {
